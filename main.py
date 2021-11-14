@@ -111,6 +111,48 @@ class Validator:
                 count_correct += 1
         return count_correct
 
+    def count_arg(self):
+        res = []
+        count_telephone = 0
+        count_weight = 0
+        count_inn = 0
+        count_passport = 0
+        count_university = 0
+        count_work_experience = 0
+        count_academic_degree = 0
+        count_worldview = 0
+        count_address = 0
+        for i in range(len(self.data)):
+            if not self.data[i].check_telephone():
+                count_telephone += 1
+            if not self.data[i].check_weight():
+                count_weight += 1
+            if not self.data[i].check_inn():
+                count_inn += 1
+            if not self.data[i].check_passport_series():
+                count_passport += 1
+            if not self.data[i].check_university():
+                count_university += 1
+            if not self.data[i].check_work_experience():
+                count_work_experience += 1
+            if not self.data[i].check_academic_degree():
+                count_academic_degree += 1
+            if not self.data[i].check_worldview():
+                count_worldview += 1
+            if not self.data[i].check_address():
+                count_address += 1
+
+        res.append(count_telephone)
+        res.append(count_weight)
+        res.append(count_inn)
+        res.append(count_passport)
+        res.append(count_university)
+        res.append(count_work_experience)
+        res.append(count_academic_degree)
+        res.append(count_worldview)
+        res.append(count_address)
+        return res
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-input", type=str, default="38.txt")
@@ -125,3 +167,13 @@ valid = val.count_correct_nodes()
 invalid = val.count_incorrect_nodes()
 print(valid)
 print(invalid)
+res = val.count_arg()
+print("Количество некорректных записей 'telephone':", res[0])
+print("Количество некорректных записей 'weight':", res[1])
+print("Количество некорректных записей 'inn':", res[2])
+print("Количество некорректных записей 'passport_series':", res[3])
+print("Количество некорректных записей 'university':", res[4])
+print("Количество некорректных записей 'work_experience':", res[5])
+print("Количество некорректных записей 'academic_degree':", res[6])
+print("Количество некорректных записей 'worldview':", res[7])
+print("Количество некорректных записей 'address':", res[8])
