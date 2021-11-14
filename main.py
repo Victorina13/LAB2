@@ -15,54 +15,98 @@ class Node:
         self.node = _node.copy()
 
     def check_telephone(self) -> bool:
+        """Выполняет проверку на валидность поля telephone
+        Returns
+        -------
+        True, если номер телефона валидный, иначе False """
+
         pattern = "^\\+7-\\(\\d{3}\\)-\\d{3}(-\\d{2}){2}"
         if re.match(pattern, self.node["telephone"]):
             return True
         return False
 
     def check_weight(self) -> bool:
+        """Выполняет проверку на валидность поля weight
+        Returns
+        -------
+        True, если вес валидный,иначе False """
+
         pattern = "^([1-9]|[1-9][0-9]|1[0-9][1-9]|2[0-5][0-9])$"
         if re.match(pattern, str(self.node["weight"])):
             return True
         return False
 
     def check_inn(self) -> bool:
+        """Выполняет проверку на валидность поля inn
+        Returns
+        -------
+        True, если ИНН валидный,иначе False """
+
         pattern = "^[0-9]{12}$"
         if re.match(pattern, self.node["inn"]):
             return True
         return False
 
     def check_passport_series(self) -> bool:
+        """Выполняет проверку на валидность поля passport_series
+        Returns
+                -------
+                True, если серия паспорта валидная,иначе False"""
         pattern = "\\d{2} \\d{2}"
         if re.match(pattern, self.node["passport_series"]):
             return True
         return False
 
     def check_university(self) -> bool:
+        """Выполняет проверку на валидность поля university
+        Returns
+        -------
+        True, если название университета валидное,иначе False"""
+
         pattern = "^.*(?:СПбГУ|МФТИ|МГУ|МГТУ|им\\.|[Уу]нивер|[Аа]кадем|[Ии]нстит|[Нн]ационал).*$"
         if re.match(pattern, self.node["university"]):
             return True
         return False
 
     def check_work_experience(self) -> bool:
+        """Выполняет проверку на валидность поля work_experience
+        Returns
+        -------
+        True, если стаж работы валидный,иначе False"""
+
         pattern = "^([1-9]|[1-6][0-9])$"
         if re.match(pattern, str(self.node["work_experience"])):
             return True
         return False
 
     def check_academic_degree(self) -> bool:
+        """Выполняет проверку на валидность поля academic_degree
+        Returns
+        -------
+        True, если ученая степень валидная,иначе False"""
+
         pattern = "Доктор наук|Магистр|Кандидат наук|Специалист|Бакалавр"
         if re.match(pattern, self.node["academic_degree"]):
             return True
         return False
 
     def check_worldview(self) -> bool:
+        """Выполняет проверку на валидность поля worldview
+        Returns
+        -------
+        True, если мировоззрение валидное,иначе False"""
+
         pattern = "^.+(?:изм|ство|ам)$"
         if re.match(pattern, self.node["worldview"]):
             return True
         return False
 
     def check_address(self) -> bool:
+        """Выполняет проверку на валидность поля address
+         Returns
+         -------
+        True, если адрес валидный,иначе False"""
+
         pattern = "^[\\wа-яА-Я\\s\\.\\d-]* \\d+$"
         if re.match(pattern, self.node["address"]):
             return True
@@ -70,6 +114,11 @@ class Node:
 
 
 class Validator:
+    """Объект класса Validator проверяет записи файла на валидность.
+       Attributes
+       ----------
+       data : list
+       Список записей """
     data: list
 
     def __init__(self, _data):
@@ -79,7 +128,7 @@ class Validator:
             self.data.append(Node(i.copy()))
 
     def parse(self, index) -> dict:
-
+        """Выполняет валидацию записи по ее ключу."""
         res = {
             "telephone": self.data[index].check_telephone(),
             "weight": self.data[index].check_weight(),
@@ -94,6 +143,7 @@ class Validator:
         return res.copy()
 
     def count_incorrect_nodes(self) -> int:
+        """Считает число некорректных записей"""
         count_incorrect = 0
         for i in tqdm(range(len(self.data)),
                       desc="Подсчёт некорректных записей",
@@ -103,6 +153,7 @@ class Validator:
         return count_incorrect
 
     def count_correct_nodes(self) -> int:
+        """Считает число корректных записей"""
         count_correct = 0
         for i in tqdm(range(len(self.data)),
                       desc="Подсчёт корректных записей",
@@ -111,7 +162,21 @@ class Validator:
                 count_correct += 1
         return count_correct
 
+    def res_file(self, output_name):
+        """Записывает корректные записи в файл."""
+        tmp = []
+        for i in range(len(self.data)):
+            if not (False in self.parse(i).values()):
+                tmp.append(self.data[i].node.copy())
+        json.dump(tmp, open(output_name, "w", encoding="windows-1251"),
+                  ensure_ascii=False, sort_keys=False, indent=4)
+
     def count_arg(self):
+        """Считает число некорректных полей
+        Returns
+        -------
+        res
+        Список с количеством некорректных данных"""
         res = []
         count_telephone = 0
         count_weight = 0
@@ -165,8 +230,9 @@ output_path = args.output
 val = Validator(input_path)
 valid = val.count_correct_nodes()
 invalid = val.count_incorrect_nodes()
-print(valid)
-print(invalid)
+print("Всего корректных записей в файле: ", valid)
+print("Всего некорректных записей в файле: ", invalid)
+val.res_file(output_path)
 res = val.count_arg()
 print("Количество некорректных записей 'telephone':", res[0])
 print("Количество некорректных записей 'weight':", res[1])
